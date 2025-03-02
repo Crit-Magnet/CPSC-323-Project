@@ -1,0 +1,123 @@
+===== INPUT =====
+    $$
+    function sumArray(arr.integer[10], size.integer)
+    {
+        integer i, total;
+        total = 0;
+        i = 0;
+        while (i < size)
+        {
+            total = total + arr[i];
+            i = i + 1;
+        }
+        return total;
+    }
+    $$
+    integer nums[10], n, i;
+    scan(n);
+    i = 0;
+    while (i < n)
+    {
+        scan(nums[i]);
+        i = i + 1;
+    }
+    print(sumArray(nums, n));
+    $$
+
+===== TOKENIZED OUTPUT =====
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $
+Token: keyword, Lexeme: function
+Token: identifier, Lexeme: sumArray
+Token: separator, Lexeme: (
+Token: INVALID, Lexeme: arr.integer[10]
+Token: separator, Lexeme: ,
+Token: INVALID, Lexeme: size.integer
+Token: separator, Lexeme: )
+Token: separator, Lexeme: {
+Token: keyword, Lexeme: integer
+Token: identifier, Lexeme: i
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: total
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: total
+Token: operator, Lexeme: =
+Token: integer, Lexeme: 0
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: =
+Token: integer, Lexeme: 0
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: while
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: <
+Token: identifier, Lexeme: size
+Token: separator, Lexeme: )
+Token: separator, Lexeme: {
+Token: identifier, Lexeme: total
+Token: operator, Lexeme: =
+Token: identifier, Lexeme: total
+Token: operator, Lexeme: +
+Token: INVALID, Lexeme: arr[i]
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: =
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: +
+Token: integer, Lexeme: 1
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: }
+Token: keyword, Lexeme: return
+Token: identifier, Lexeme: total
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: }
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $
+Token: keyword, Lexeme: integer
+Token: INVALID, Lexeme: nums[10]
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: n
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: i
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: scan
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: n
+Token: separator, Lexeme: )
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: =
+Token: integer, Lexeme: 0
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: while
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: <
+Token: identifier, Lexeme: n
+Token: separator, Lexeme: )
+Token: separator, Lexeme: {
+Token: keyword, Lexeme: scan
+Token: separator, Lexeme: (
+Token: INVALID, Lexeme: nums[i]
+Token: separator, Lexeme: )
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: =
+Token: identifier, Lexeme: i
+Token: operator, Lexeme: +
+Token: integer, Lexeme: 1
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: }
+Token: keyword, Lexeme: print
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: sumArray
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: nums
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: n
+Token: separator, Lexeme: )
+Token: separator, Lexeme: )
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $

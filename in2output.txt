@@ -1,0 +1,87 @@
+===== INPUT =====
+    $$
+    function power(base.integer, exp.integer)
+    {
+        integer result;
+        result = 1;
+        while (exp > 0)
+        {
+            result = result * base;
+            exp = exp - 1;
+        }
+        return result;
+    }
+    $$
+    integer b, e;
+    scan(b, e);
+    print(power(b, e));
+    $$
+
+===== TOKENIZED OUTPUT =====
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $
+Token: keyword, Lexeme: function
+Token: identifier, Lexeme: power
+Token: separator, Lexeme: (
+Token: INVALID, Lexeme: base.integer
+Token: separator, Lexeme: ,
+Token: INVALID, Lexeme: exp.integer
+Token: separator, Lexeme: )
+Token: separator, Lexeme: {
+Token: keyword, Lexeme: integer
+Token: identifier, Lexeme: result
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: result
+Token: operator, Lexeme: =
+Token: integer, Lexeme: 1
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: while
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: exp
+Token: operator, Lexeme: >
+Token: integer, Lexeme: 0
+Token: separator, Lexeme: )
+Token: separator, Lexeme: {
+Token: identifier, Lexeme: result
+Token: operator, Lexeme: =
+Token: identifier, Lexeme: result
+Token: operator, Lexeme: *
+Token: identifier, Lexeme: base
+Token: separator, Lexeme: ;
+Token: identifier, Lexeme: exp
+Token: operator, Lexeme: =
+Token: identifier, Lexeme: exp
+Token: operator, Lexeme: -
+Token: integer, Lexeme: 1
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: }
+Token: keyword, Lexeme: return
+Token: identifier, Lexeme: result
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: }
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $
+Token: keyword, Lexeme: integer
+Token: identifier, Lexeme: b
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: e
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: scan
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: b
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: e
+Token: separator, Lexeme: )
+Token: separator, Lexeme: ;
+Token: keyword, Lexeme: print
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: power
+Token: separator, Lexeme: (
+Token: identifier, Lexeme: b
+Token: separator, Lexeme: ,
+Token: identifier, Lexeme: e
+Token: separator, Lexeme: )
+Token: separator, Lexeme: )
+Token: separator, Lexeme: ;
+Token: separator, Lexeme: $
+Token: separator, Lexeme: $
