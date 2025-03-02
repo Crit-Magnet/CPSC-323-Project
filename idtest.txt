@@ -1,0 +1,20 @@
+a
+A
+B
+c123
+test_var
+anotherVar.
+_leadingUnderscore
+var_123
+this_is_valid123
+VeryLongIdentifierNameWith123Numbers
+keyword_like_variable integerX if_else_var
+123InvalidIdentifier   
+@invalidSymbol         
+var-name               
+int                    
+while                  
+double_value           
+5timesLoop             
+space inIdentifier     
+_thisIsFineBut.123     
