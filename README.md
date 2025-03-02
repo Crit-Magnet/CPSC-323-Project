@@ -25,6 +25,13 @@
 - `idtest.txt` - Identifier testing input.
 - `numtest.txt` - Number testing input.
 
+## **Expected Test Outputs**
+- `in1output.txt` - Output for in1.txt.
+- `in2output.txt` - Output for in2.txt.
+- `in3output.txt` - Output for in3.txt.
+- `idtestoutput.txt` - Output for idtest.txt.
+- `numtestoutput.txt` - Output for numtest.txt.
+
 ## **Build and Configuration**
 - `Makefile` - Compilation rules for building the project.
 
