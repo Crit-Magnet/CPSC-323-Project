@@ -11,9 +11,11 @@
 #include "operators.h"   // List of operators
 #include "separators.h"  // List of separators
 
-std::vector<Token> lexer(const std::string &source_code) {
+// Entire function could simply return a struct of token but kept this way for understanding
+std::vector<Token> lexer(const std::string &source_code) 
+{
     std::vector<Token> tokens;
-    size_t i = 0;
+    static size_t i = 0; // static to keep source_code location when recalled
 
     while (i < source_code.size()) {
         char ch = source_code[i];
@@ -42,7 +44,13 @@ std::vector<Token> lexer(const std::string &source_code) {
         if (separators.find(ch) != separators.end()) {
             tokens.push_back({"separator", std::string(1, ch)});
             i++;
-            continue;
+            // continue;
+            if(tokens[0].lexeme == "$")
+            {
+            	tokens[0].lexeme += "$";
+            	i++;
+            }
+            return tokens;
         }
 
         // 4) Check Operators (multi-char first, e.g. ==, !=, <=, =>)
@@ -57,13 +65,14 @@ std::vector<Token> lexer(const std::string &source_code) {
         if (operators.find(op2) != operators.end()) {
             tokens.push_back({"operator", op2});
             i += 2;
-            continue;
+            // continue;
+            return tokens;
         }
         // Check single-character operator
         else if (operators.find(op1) != operators.end()) {
             tokens.push_back({"operator", op1});
             i++;
-            continue;
+            return tokens;
         }
 
         // 5) Unified Chunk Approach:
@@ -102,7 +111,7 @@ std::vector<Token> lexer(const std::string &source_code) {
             // If we get here, it's probably an unknown single char
             tokens.push_back({"INVALID", std::string(1, ch)});
             i++;
-            continue;
+            return tokens;
         }
 
         // 6) Classify the chunk
@@ -112,17 +121,22 @@ std::vector<Token> lexer(const std::string &source_code) {
         //  - Otherwise INVALID
         if (keywords.find(chunk) != keywords.end()) {
             tokens.push_back({"keyword", chunk});
+            return tokens;
         } else if (FSMid(chunk)) {
             tokens.push_back({"identifier", chunk});
+            return tokens;
         } else if (FSMnum(chunk)) {
             // Distinguish integer vs real by checking for '.'
             if (chunk.find('.') != std::string::npos) {
                 tokens.push_back({"real", chunk});
+                return tokens;
             } else {
                 tokens.push_back({"integer", chunk});
+                return tokens;
             }
         } else {
             tokens.push_back({"INVALID", chunk});
+            return tokens;
         }
     }
 
