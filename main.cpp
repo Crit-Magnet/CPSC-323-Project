@@ -36,18 +36,31 @@ int main(int argc, char *argv[]) {
     output_file << "===== INPUT =====" << std::endl;
     output_file << source_code << std::endl;
 
-    // Tokenize the input
-    std::vector<Token> tokens = lexer(source_code);
+
 
     // Print tokenized output to file
     output_file << "\n===== TOKENIZED OUTPUT =====" << std::endl;
+    // long long unsigined to match .length() return type
+    long long unsigned int count = 0;
 
-    for (const auto &token : tokens) {
-        output_file << "Token: " << token.type << ", Lexeme: " << token.lexeme << std::endl;
+    // Actually runs like 100+ times since it runs for each 
+    // character in the source_code string, but since this 
+    // isnt needed for the 2nd part, I just put it here to
+    // show how I tested single use lexer();
+    while(count != source_code.length())
+    {
+        // Tokenize the input
+        std::vector<Token> tokens = lexer(source_code);
+        
+        count++;
+
+        for (const auto &token : tokens) {
+            output_file << "Token: " << token.type << ", Lexeme: " << token.lexeme << std::endl;
+        }
     }
-
-    // Close the output file
+    // Close the output & input file
     output_file.close();
+    file.close();
 
     return 0;
 }
