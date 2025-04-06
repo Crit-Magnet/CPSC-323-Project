@@ -92,7 +92,7 @@ void FunctionDefinitionsPrime()
 	}
 	else
 	{
-		std::cout << "";
+		std::cout << "Function Def' empty\n";
 		Empty();
 	}
 	return;
@@ -116,9 +116,10 @@ void Function()
 				token = getNext(source);
 				std::cout << token.lexeme << std::endl;
 				OptParameterList();
-				if(token.lexeme != ")")
+				std::cout << "RETURN FROM OPTPARAMLIST";
+				if(token.lexeme == ")")
 				{
-					std::cout << "in )" << std::endl;
+					std::cout << "INSIDE OF )" << std::endl;
 					std::cout << ") <Opt Declaration List> <Body>\n";
 					token = getNext(source);
 					std::cout << token.lexeme << std::endl;
@@ -201,10 +202,10 @@ void Body( )
 {
 	if(token.lexeme == "{")
 	{
+		std::cout << "<Body> ::= { < Statement List> }";
 		std::cout <<"in Body\n";
 		while(token.lexeme != "}")
 		{
-			std::cout << "<Body> ::= { < Statement List> }";
 			StatementList();
 		}
 	}
@@ -220,10 +221,6 @@ void OptDeclarationList()
 		DeclarationList();
 	}
 	else if(token.type == "INVALID")
-	{
-		Empty();
-	}
-	else
 	{
 		Empty();
 	}
@@ -282,6 +279,8 @@ void IDs()
 	{
 		token = getNext(source);
 		std::cout << token.lexeme << std::endl;
+
+		// Check for a list of IDs separated by ','s
 		while(true)
 		{
 			if(token.lexeme == ",")
@@ -311,71 +310,92 @@ void IDs()
 // <IDs>’ → <Identifier>, <IDs>’ | ε
 void IDsPrime()
 {
-
 	return;
 }
 
 // <Statement List> -> <Statement> <Statement List>’
 void StatementList()
 {
-	if(true)
+	std::cout << "<Statement List> -> <Statement> <Statement List>’\n";
+	while(true)
 	{
-		std::cout << "";
 		Statement();
-	}
-	else
-	{
-		std::cout << "";
-		Statement();
-		StatementList();
+//		StatementListPrime();
+
+		// Check to see if we have any statements
+		// checks for the start of each statement
+		if(token.lexeme  != "{" && token.type == "identifier"   &&
+		    token.lexeme != "if" && token.lexeme != "print" 	&&
+		    token.lexeme != "scan" &&token.lexeme != "return"   &&
+		    token.lexeme != "while")
+		{
+			std::cout << "In statement List" << std::endl;
+			break;
+		}
 	}
 	return;
 }
 
 // <Statement List>’ →<Statement> <Statement List>’ | ε
-void StatementListPrime()
-{
-
-	return;
-}
+//void StatementListPrime()
+//{
+//	// Check if Statement again
+//	if(token.lexeme != "{" && token.type == "identifier"    &&
+//			    token.lexeme != "if" && token.lexeme != "print" 	&&
+//			    token.lexeme != "scan" &&token.lexeme != "return"   &&
+//			    token.lexeme != "while")
+//	{
+//		Statement();
+//		StatementListPrime();
+//	}
+//	else
+//	{
+//		Empty();
+//	}
+//	return;
+//}
 
 // <Statement> ::= <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 void Statement()
 {
 	if(token.lexeme == "{")
 	{
-		std::cout << "";
+		std::cout << "compound";
 		Compound();
 	}
-	else if(true)
+	else if(token.type == "identifier")
 	{
-		std::cout << "";
+		std::cout << "assign";
 		Assign();
 	}
-	else if(true)
+	else if(token.lexeme == "if")
 	{
-		std::cout << "";
+		std::cout << "if";
 		If();
 	}
-	else if(true)
+	else if(token.lexeme == "return")
 	{
-		std::cout << "";
+		std::cout << "return";
 		Return();
 	}
-	else if(true)
+	else if(token.lexeme == "print")
 	{
-		std::cout << "";
+		std::cout << "print";
 		Print();
 	}
-	else if(true)
+	else if(token.lexeme == "scan")
 	{
-		std::cout << "";
+		std::cout << "scan";
 		Scan();
+	}
+	else if(token.lexeme == "while")
+	{
+		std::cout << "while";
+		While();
 	}
 	else
 	{
-		std::cout << "";
-		While();
+		Empty();
 	}
 
 	return;
@@ -386,10 +406,12 @@ void Compound()
 {
 	if(token.lexeme == "{")
 	{
-		while(token.lexeme != "}")
+		token = getNext(source);
+		StatementList();
+		token = getNext(source);
+		if(token.lexeme != "}")
 		{
-			std::cout << "";
-			StatementList();
+			std::cout << "error\n";
 		}
 	}
 	return;
@@ -425,15 +447,36 @@ void IfPrime()
 // <Return> ::= return ; | return <Expression> ;
 void Return()
 {
-	if(true)
+	std::string temp2;
+	Token temp = getNext(source);
+	std::cout << temp.lexeme << std::endl;
+	std::cin >>  temp2; // STOPS PROGRAM FOR DEBUG
+	if(temp.lexeme == ";")
 	{
-		std::cout << "";
-		return;
-	}
-	else if(true)
-	{
-		std::cout << "";
-		return Expression();
+		if(token.lexeme == "return")
+		{
+			token = temp;
+			if(token.lexeme == ";")
+			{
+				token = getNext(source);
+			}
+			else
+			{
+				std::cout << "return error";
+			}
+		}
+		else
+		{
+			if(token.lexeme == "return")
+			{
+				token = temp;
+				Expression();
+				if(token.lexeme == ";")
+				{
+					token = getNext(source);
+				}
+			}
+		}
 	}
 	return;
 }
@@ -441,6 +484,14 @@ void Return()
 // <Print> ::= print ( <Expression>);
 void Print()
 {
+	if(token.lexeme == "print")
+	{
+		token = getNext(source);
+		if(token.lexeme == "(")
+		{
+			Expression();
+		}
+	}
 	return;
 }
 
@@ -499,24 +550,58 @@ void Relop()
 // <Expression> →  <Term><Expression>’
 void Expression()
 {
+	Term();
+	ExpressionPrime();
 	return;
 }
 
 // <Expression>’ → +<Term><Expression>’ | - <Term><Expression>’ | ε
 void ExpressionPrime()
 {
+	if(token.lexeme == "+")
+	{
+		token = getNext(source);
+		Term();
+		ExpressionPrime();
+	}
+	else if(token.lexeme == "-")
+	{
+		token = getNext(source);
+		Term();
+		ExpressionPrime();
+	}
+	else
+	{
+		Empty();
+	}
 	return;
 }
 
 // <Term> → <Factor><Term>’
 void Term()
 {
+	Factor();
+	TermPrime();
 	return;
 }
 
 // <Term>’ → * <Factor><Term>’ | / <Factor><Term>’ | ε
 void TermPrime()
 {
+	if(token.lexeme == "*" || token.lexeme == "/")
+	{
+		token = getNext(source);
+		Factor();
+		TermPrime();
+	}
+	else if(token.lexeme == "INVALID")
+	{
+		std::cout << "Error TermPrime";
+	}
+	else
+	{
+		Empty();
+	}
 	return;
 }
 
@@ -525,12 +610,13 @@ void Factor()
 {
 	if(token.lexeme == "-")
 	{
-		std::cout << "";
+		std::cout << "<Factor> ::= - <Primary>";
+		token = getNext(source);
 		Primary();
 	}
 	else
 	{
-		std::cout << "";
+		std::cout << "<Factor> ::= <Primary>";
 		Primary();
 	}
 	return;
