@@ -3,10 +3,12 @@
 #include <sstream>
 #include <vector>
 
-#include "lexer.h"
+#include "Lexical Analyzer/lexer.h" // Lexer
+#include "Syntax Analyzer/syntax_analyzer.h" // Syntax Analyzer
 
 // Function prototype (assuming lexer is in a separate file)
 std::vector<Token> lexer(const std::string &source_code);
+
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -40,13 +42,17 @@ int main(int argc, char *argv[]) {
 
     // Print tokenized output to file
     output_file << "\n===== TOKENIZED OUTPUT =====" << std::endl;
-    // long long unsigined to match .length() return type
+
+    // long long unsigned to match .length() return type
     long long unsigned int count = 0;
+
+    Rat25S(source_code);// call to SA
 
     // Actually runs like 100+ times since it runs for each 
     // character in the source_code string, but since this 
     // isnt needed for the 2nd part, I just put it here to
     // show how I tested single use lexer();
+    //(Still here to confirm LA still works as intended)
     while(count != source_code.length())
     {
         // Tokenize the input

@@ -1,30 +1,32 @@
-#include "lexer.h"
+#include "../Lexical Analyzer/lexer.h"
 
 #include <cctype>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "fsm_id.h"      // Identifiers FSM
-#include "fsm_number.h"  // Numbers FSM
-#include "keywords.h"    // List of keywords
-#include "operators.h"   // List of operators
-#include "separators.h"  // List of separators
+#include "../Lexical Analyzer/fsm_id.h"      // Identifiers FSM
+#include "../Lexical Analyzer/fsm_number.h"  // Numbers FSM
+#include "../Lexical Analyzer/keywords.h"    // List of keywords
+#include "../Lexical Analyzer/operators.h"   // List of operators
+#include "../Lexical Analyzer/separators.h"  // List of separators
 
-// Entire function could simply return a struct of token but kept this way for understanding
-std::vector<Token> lexer(const std::string &source_code) 
-{
-    std::vector<Token> tokens;
-    static size_t i = 0; // static to keep source_code location when recalled
 
-    while (i < source_code.size()) {
-        char ch = source_code[i];
+std::vector<Token> lexer(const std::string &source_code) {
+	static size_t i = 0;
+	std::vector<Token> tokens;
+
+    while (i < source_code.size()){
+    	char ch = source_code[i];
 
         // 1) Skip Whitespace
+    	//    Return if we see a space since it is not a token
         if (isspace(ch)) {
-            i++;
-            continue;
+        	i++;
+//        	return tokens;
+        	continue;
         }
+
 
         // 2) Skip Comments [* ... *]
         //    If we see '[' followed by '*', skip until '*]'
@@ -44,7 +46,7 @@ std::vector<Token> lexer(const std::string &source_code)
         if (separators.find(ch) != separators.end()) {
             tokens.push_back({"separator", std::string(1, ch)});
             i++;
-            // continue;
+//            continue;
             if(tokens[0].lexeme == "$")
             {
             	tokens[0].lexeme += "$";
@@ -52,6 +54,8 @@ std::vector<Token> lexer(const std::string &source_code)
             }
             return tokens;
         }
+
+
 
         // 4) Check Operators (multi-char first, e.g. ==, !=, <=, =>)
         //    Then single-char (e.g. +, -, /, *)
@@ -65,13 +69,14 @@ std::vector<Token> lexer(const std::string &source_code)
         if (operators.find(op2) != operators.end()) {
             tokens.push_back({"operator", op2});
             i += 2;
-            // continue;
+//            continue;
             return tokens;
         }
         // Check single-character operator
         else if (operators.find(op1) != operators.end()) {
             tokens.push_back({"operator", op1});
             i++;
+//            continue;
             return tokens;
         }
 
@@ -111,6 +116,7 @@ std::vector<Token> lexer(const std::string &source_code)
             // If we get here, it's probably an unknown single char
             tokens.push_back({"INVALID", std::string(1, ch)});
             i++;
+//            continue;
             return tokens;
         }
 

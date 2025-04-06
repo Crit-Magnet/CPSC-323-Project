@@ -1,4 +1,4 @@
-#include "fsm_number.h"
+#include "../Lexical Analyzer/fsm_number.h"
 
 #include <cctype>  // Needed for isalpha() and isalnum()
 

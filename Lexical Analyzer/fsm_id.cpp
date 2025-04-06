@@ -1,4 +1,5 @@
-#include "fsm_id.h"
+#include "../Lexical Analyzer/fsm_id.h"
+
 #include <cctype>  // Needed for isalpha() and isdigit()
 #include <string>
 

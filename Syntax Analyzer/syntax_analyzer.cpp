@@ -1,76 +1,47 @@
+
+
 #include <iostream>
 #include <string>
 #include <sstream>
 
 #include "../Lexical Analyzer/lexer.h"
-#include "syntax_rules.h"
+#include "syntax_analyzer.h"
 
-// To get the source_code for lexer used in SA
-std::string readFile()
+static std::string source = "";
+
+Token getNext(std::string source_code)
 {
-    int argc = 3;
-    std::string argv = "Lexical Analyzer/in1.txt";
-     if (argc < 2) {
-         std::cerr << "Usage: " << argv[0] << " <source_file>" << std::endl;
-         return "";
-     }
-
-    // // Read file into a string
-    std::fstream  file;
- 	std::fstream* filePtr;
- 	file.open(argv); // open input for parsing
- 	filePtr = &file;
-
-     if (!file) {
-         std::cerr << "Error: Could not open file " << argv[1] << std::endl;
-         return "";
-     }
-
-    std::stringstream buffer;
-    buffer << filePtr->rdbuf();  // Read entire file into buffer
-    std::string source_code = buffer.str();  // Convert to string
-
-    // Open output file for writing
-    std::ofstream output_file("Lexical Analyzer/output.txt");
-    if (!output_file) {
-        std::cerr << "Error: Could not open output.txt for writing." << std::endl;
-        return "";
-    }
-    return source_code;
-}
-
-std::string file = readFile();
-
-Token getNext()
-{
-	Token token = lexer(file)[0];
+	Token token = lexer(source_code)[0];
 	return token;
 }
 
-Token token = getNext();
-Token next  = getNext();
-
-
+Token token;
+Token nextToken;
 /*******************************************************************************
  * THESE RULES ARE ORDERED IN THE SAME ORDER AS DENOTED IN THE ASSIGNMENT
  ******************************************************************************/
 // <Rat25S> ::= $$ <Opt Function Definitions> $$
 //				<Opt Declaration List> $$ <Statement List> $$
-void Rat25S()
+void Rat25S(std::string source_code)
 {
+	source = source_code;
+	token = getNext(source);
 	if(token.lexeme == "$$")
 	{
-		token = getNext();
+		std::cout << "<Opt Function Definitions>\n";
+		token = getNext(source);
 		OptFunctionDefinitions();
 	}
 	if(token.lexeme == "$$")
 	{
-		token = getNext();
+		std::cout << "<Opt Declaration List>\n";
+		token = getNext(source);
 		OptDeclarationList();
 	}
 	if(token.lexeme == "$$")
 	{
-		token = getNext();
+		std::cout << "<Statement List>\n";
+		token = getNext(source);
 		StatementList();
 	}
 	return;
@@ -81,6 +52,7 @@ void OptFunctionDefinitions()
 {
 	if(token.lexeme == "function")
 	{
+		std::cout << "<Opt Function Definitions> ::= <Function Definitions>\n";
 		FunctionDefinitions();
 	}
 	else
@@ -98,21 +70,24 @@ void FunctionDefinitions()
 		return;
 	}
 
+	std::cout << "<Function Definitions> → <Function><Function Definitions>’\n";
 	Function();
 	FunctionDefinitionsPrime();
 	return;
 }
 
-//<Function Definitions>’ → <Function><Function Definitions>’ | ε
+// <Function Definitions>’ → <Function><Function Definitions>’ | ε
 void FunctionDefinitionsPrime()
 {
 	if(token.type == "function")
 	{
+		std::cout << "<Function Definitions>’ → <Function><Function Definitions>’\n";
 		Function();
 		FunctionDefinitionsPrime();
 	}
 	else
 	{
+		std::cout << "";
 		Empty();
 	}
 	return;
@@ -123,19 +98,21 @@ void Function()
 {
 	if(token.lexeme == "function")
 	{
-		token = getNext();
+		token = getNext(source);
 
 		if(token.type == "identifier")
 		{
-			token = getNext();
+			token = getNext(source);
 
 			if(token.lexeme == "(")
 			{
-				token = getNext();
+				std::cout << "";
+				token = getNext(source);
 				OptParameterList();
 				if(token.lexeme != ")")
 				{
-					token = getNext();
+					std::cout << "";
+					token = getNext(source);
 					OptDeclarationList();
 					Body();
 				}
@@ -152,10 +129,12 @@ void OptParameterList()
 {
 	if(token.type == "identifier")
 	{
+		std::cout << "";
 		ParameterList();
 	}
 	else
 	{
+		std::cout << "";
 		Empty();
 	}
 	return;
@@ -164,6 +143,7 @@ void OptParameterList()
 // <Parameter List> → <Parameter> <Parameter List>’
 void ParameterList()
 {
+	std::cout << "";
 	Parameter();
 	ParameterListPrime();
 	return;
@@ -172,9 +152,11 @@ void ParameterList()
 //<Parameter List>’ → <Parameter> , <Parameter List>’ | ε
 void ParameterListPrime()
 {
+	std::cout << "";
 	Parameter();
 	if(token.lexeme == ",")
 	{
+		std::cout << "";
 		ParameterListPrime();
 	}
 	return;
@@ -183,6 +165,7 @@ void ParameterListPrime()
 // <Parameter> ::= <IDs > <Qualifier>
 void Parameter()
 {
+	std::cout << "";
 	IDs();
 	Qualifier();
 	return;
@@ -212,6 +195,7 @@ void Body( )
 	{
 		while(token.lexeme != "}")
 		{
+			std::cout << "";
 			StatementList();
 		}
 	}
@@ -223,10 +207,12 @@ void OptDeclarationList()
 {
 	if(true)
 	{
+		std::cout << "";
 		Statement();
 	}
 	else
 	{
+		std::cout << "";
 		Statement();
 		StatementList();
 	}
@@ -236,9 +222,11 @@ void OptDeclarationList()
 // <Declaration List> → <Declaration> ; <Declaration List>’
 void DeclarationList()
 {
+	std::cout << "";
 	Declaration();
 	if(token.lexeme == ";")
 	{
+		std::cout << "";
 		DeclarationListPrime();
 	}
 	return;
@@ -247,13 +235,16 @@ void DeclarationList()
 // <Declaration List>’ →  <Declaration> ; <Declaration List>’ | ε
 void DeclarationListPrime()
 {
+	std::cout << "";
 	Declaration();
 	if(token.lexeme == ";")
 	{
+		std::cout << "";
 		DeclarationListPrime();
 	}
 	else
 	{
+		std::cout << "";
 		Empty();
 	}
 
@@ -263,22 +254,35 @@ void DeclarationListPrime()
 //  <Declaration> ::= <Qualifier > <IDs>
 void Declaration()
 {
-	//Qualifier();
-	IDs();
+	std::cout << "";
+	Qualifier();
+	if(token.lexeme == ">")
+	{
+		std::cout << "";
+		IDs();
+	}
 	return;
 }
 
 // <IDs> → <Identifier> <IDs>’
 void IDs()
 {
-	if(true)
+	if(token.type == "identfier")
 	{
-		Token id;
+		token = getNext(source);
 	}
-	else if(false)
+
+	if(token.lexeme == ",")
 	{
-		Token id;
-		IDs();
+		token = getNext(source);
+		if(token.type == "identifier")
+		{
+			token = getNext(source);
+		}
+	}
+	else
+	{
+		return;
 	}
 	return;
 }
@@ -295,10 +299,12 @@ void StatementList()
 {
 	if(true)
 	{
+		std::cout << "";
 		Statement();
 	}
 	else
 	{
+		std::cout << "";
 		Statement();
 		StatementList();
 	}
@@ -315,32 +321,39 @@ void StatementListPrime()
 // <Statement> ::= <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 void Statement()
 {
-	if(true)
+	if(token.lexeme == "{")
 	{
+		std::cout << "";
 		Compound();
 	}
 	else if(true)
 	{
+		std::cout << "";
 		Assign();
 	}
 	else if(true)
 	{
+		std::cout << "";
 		If();
 	}
 	else if(true)
 	{
+		std::cout << "";
 		Return();
 	}
 	else if(true)
 	{
+		std::cout << "";
 		Print();
 	}
 	else if(true)
 	{
+		std::cout << "";
 		Scan();
 	}
 	else
 	{
+		std::cout << "";
 		While();
 	}
 
@@ -354,6 +367,7 @@ void Compound()
 	{
 		while(token.lexeme != "}")
 		{
+			std::cout << "";
 			StatementList();
 		}
 	}
@@ -363,7 +377,7 @@ void Compound()
 // <Assign> ::= <Identifier> = <Expression> ;
 void Assign()
 {
-
+	std::cout << "";
 	Expression();
 	return;
 }
@@ -372,6 +386,7 @@ void Assign()
 // <If> ::= if ( <Condition> ) <Statement> <If'>
 void If()
 {
+	std::cout << "";
 	return;
 }
 
@@ -380,7 +395,7 @@ void If()
 // | endif
 void IfPrime()
 {
-
+	std::cout << "";
 	return ;
 }
 
@@ -391,10 +406,12 @@ void Return()
 {
 	if(true)
 	{
+		std::cout << "";
 		return;
 	}
 	else if(true)
 	{
+		std::cout << "";
 		return Expression();
 	}
 	return;
@@ -421,6 +438,7 @@ void While()
 // <Condition> ::= <Expression> <Relop> <Expression>
 void Condition()
 {
+	std::cout << "";
 	Expression();
 	Relop();
 	Expression();
@@ -486,10 +504,12 @@ void Factor()
 {
 	if(token.lexeme == "-")
 	{
+		std::cout << "";
 		Primary();
 	}
 	else
 	{
+		std::cout << "";
 		Primary();
 	}
 	return;
@@ -501,9 +521,10 @@ void Primary()
 {
 	if(token.type == "identifier")
 	{
-		token = getNext();
+		token = getNext(source);
 		if(token.lexeme == "(")
 		{
+			std::cout << "";
 			IDs();
 		}
 	}
@@ -518,6 +539,7 @@ void Primary()
 // <Empty> ::= ε
 void Empty()
 {
+	std::cout << "";
 	return;
 }
 
