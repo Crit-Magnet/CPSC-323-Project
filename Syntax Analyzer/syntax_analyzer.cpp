@@ -26,24 +26,29 @@ void Rat25S(std::string source_code)
 {
 	source = source_code;
 	token = getNext(source);
+	std::cout << token.lexeme << std::endl;
 	if(token.lexeme == "$$")
 	{
 		std::cout << "<Opt Function Definitions>\n";
 		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 		OptFunctionDefinitions();
 	}
 	if(token.lexeme == "$$")
 	{
 		std::cout << "<Opt Declaration List>\n";
 		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 		OptDeclarationList();
 	}
 	if(token.lexeme == "$$")
 	{
 		std::cout << "<Statement List>\n";
 		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 		StatementList();
 	}
+	std::cout <<"\nreturn from Rat25S\n";
 	return;
 }
 
@@ -99,20 +104,24 @@ void Function()
 	if(token.lexeme == "function")
 	{
 		token = getNext(source);
-
+		std::cout << token.lexeme << std::endl;
 		if(token.type == "identifier")
 		{
 			token = getNext(source);
+			std::cout << token.lexeme << std::endl;
 
 			if(token.lexeme == "(")
 			{
-				std::cout << "";
+				std::cout << "function <Identifier> ( <Opt Parameter List>";
 				token = getNext(source);
+				std::cout << token.lexeme << std::endl;
 				OptParameterList();
 				if(token.lexeme != ")")
 				{
-					std::cout << "";
+					std::cout << "in )" << std::endl;
+					std::cout << ") <Opt Declaration List> <Body>\n";
 					token = getNext(source);
+					std::cout << token.lexeme << std::endl;
 					OptDeclarationList();
 					Body();
 				}
@@ -129,12 +138,11 @@ void OptParameterList()
 {
 	if(token.type == "identifier")
 	{
-		std::cout << "";
+		std::cout << "<Opt Parameter List> ::= <Parameter List> ->\n";
 		ParameterList();
 	}
-	else
+	else if(token.type == "INVALID")
 	{
-		std::cout << "";
 		Empty();
 	}
 	return;
@@ -143,20 +151,20 @@ void OptParameterList()
 // <Parameter List> → <Parameter> <Parameter List>’
 void ParameterList()
 {
-	std::cout << "";
+	std::cout << "<Parameter List> → <Parameter> <Parameter List>’ -> \n";
 	Parameter();
 	ParameterListPrime();
 	return;
 }
 
-//<Parameter List>’ → <Parameter> , <Parameter List>’ | ε
+// <Parameter List>’ → <Parameter> , <Parameter List>’ | ε
 void ParameterListPrime()
 {
-	std::cout << "";
+	std::cout << "<Parameter List>’ → <Parameter>\n";
 	Parameter();
 	if(token.lexeme == ",")
 	{
-		std::cout << "";
+		std::cout << ", <Parameter List>’\n";
 		ParameterListPrime();
 	}
 	return;
@@ -165,7 +173,7 @@ void ParameterListPrime()
 // <Parameter> ::= <IDs > <Qualifier>
 void Parameter()
 {
-	std::cout << "";
+	std::cout << "<Parameter> ::= <IDs> <Qualifier>\n";
 	IDs();
 	Qualifier();
 	return;
@@ -174,16 +182,16 @@ void Parameter()
 // <Qualifier> ::= integer | boolean | real
 void Qualifier()
 {
-	if(token.type == "integer")
+	if(token.lexeme == "integer"
+	    || token.lexeme == "boolean"
+	    || token.lexeme == "real")
 	{
-
-	}
-	else if(token.type == "boolean")
-	{
+		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 	}
 	else
 	{
-
+		Empty();
 	}
 	return;
 }
@@ -193,9 +201,10 @@ void Body( )
 {
 	if(token.lexeme == "{")
 	{
+		std::cout <<"in Body\n";
 		while(token.lexeme != "}")
 		{
-			std::cout << "";
+			std::cout << "<Body> ::= { < Statement List> }";
 			StatementList();
 		}
 	}
@@ -205,16 +214,18 @@ void Body( )
 // <Opt Declaration List> ::= <Declaration List> | <Empty>
 void OptDeclarationList()
 {
-	if(true)
+	if(token.type == "int" || token.type == "boolean" || token.type == "real")
 	{
-		std::cout << "";
-		Statement();
+		std::cout << "<Opt Declaration List> ::= <Declaration List>\n";
+		DeclarationList();
+	}
+	else if(token.type == "INVALID")
+	{
+		Empty();
 	}
 	else
 	{
-		std::cout << "";
-		Statement();
-		StatementList();
+		Empty();
 	}
 	return;
 }
@@ -222,11 +233,13 @@ void OptDeclarationList()
 // <Declaration List> → <Declaration> ; <Declaration List>’
 void DeclarationList()
 {
-	std::cout << "";
+	std::cout << "<Declaration List> → <Declaration>\n";
 	Declaration();
 	if(token.lexeme == ";")
 	{
-		std::cout << "";
+		std::cout << "; <Declaration List>’";
+		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 		DeclarationListPrime();
 	}
 	return;
@@ -235,16 +248,17 @@ void DeclarationList()
 // <Declaration List>’ →  <Declaration> ; <Declaration List>’ | ε
 void DeclarationListPrime()
 {
-	std::cout << "";
+	std::cout << "<Declaration List>’ →  <Declaration>\n";
 	Declaration();
 	if(token.lexeme == ";")
 	{
-		std::cout << "";
+		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
+		std::cout << "; <Declaration List>’";
 		DeclarationListPrime();
 	}
-	else
+	else if(token.type == "INVALID")
 	{
-		std::cout << "";
 		Empty();
 	}
 
@@ -254,35 +268,42 @@ void DeclarationListPrime()
 //  <Declaration> ::= <Qualifier > <IDs>
 void Declaration()
 {
-	std::cout << "";
+	std::cout << "<Declaration> ::= <Qualifier> <IDs>\n";
 	Qualifier();
-	if(token.lexeme == ">")
-	{
-		std::cout << "";
-		IDs();
-	}
+	IDs();
 	return;
 }
 
 // <IDs> → <Identifier> <IDs>’
 void IDs()
 {
-	if(token.type == "identfier")
+//	std::cout <<"In ID" << token.type << std::endl;
+	if(token.type == "identifier")
 	{
 		token = getNext(source);
-	}
-
-	if(token.lexeme == ",")
-	{
-		token = getNext(source);
-		if(token.type == "identifier")
+		std::cout << token.lexeme << std::endl;
+		while(true)
 		{
-			token = getNext(source);
+			if(token.lexeme == ",")
+			{
+				token = getNext(source);
+				std::cout << token.lexeme << std::endl;
+				if(token.type == "identifier")
+				{
+					token = getNext(source);
+					std::cout << token.lexeme << std::endl;
+				}
+			}
+			else
+			{
+				break;
+			}
+
 		}
 	}
 	else
 	{
-		return;
+		std::cout << "nothing id" << std::endl;
 	}
 	return;
 }
@@ -522,6 +543,7 @@ void Primary()
 	if(token.type == "identifier")
 	{
 		token = getNext(source);
+		std::cout << token.lexeme << std::endl;
 		if(token.lexeme == "(")
 		{
 			std::cout << "";
@@ -539,7 +561,7 @@ void Primary()
 // <Empty> ::= ε
 void Empty()
 {
-	std::cout << "";
+	std::cout << "ε\n";
 	return;
 }
 
