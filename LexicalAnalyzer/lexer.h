@@ -4,10 +4,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-
-#include "../Lexical Analyzer/token.h"
+#include "token.h"
 
 // Function to tokenize a string
 std::vector<Token> lexer(const std::string &source_code);

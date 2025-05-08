@@ -1,0 +1,237 @@
+===== INPUT =====
+$$
+function main()
+{
+  integer a, b;
+  real r;
+  a = 10;
+  b = 20;
+  r = 5.5;
+  if (a < b)
+    print(a);
+  else
+    print(b);
+  endif
+  while (a < b)
+  {
+    a = a + 1;
+    print(a);
+  }
+  endwhile
+  return a;
+}
+$$
+boolean flag;
+integer count;
+$$
+{
+  scan(count);
+  flag = true;
+  while (count > 0)
+  {
+    print(count);
+    count = count - 1;
+  }
+  endwhile
+}
+$$
+$$
+
+
+===== SYNTAX ANALYSIS =====
+   <Rat25S> ::= $$ <Opt Function Definitions> $$ <Opt Declaration List> $$ <Statement List> $$
+Token: separator   Lexeme: $$
+   <Opt Function Definitions> ::= <Function Definitions>
+   <Function Definitions> ::= <Function> <Function Definitions>'
+   <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
+Token: keyword   Lexeme: function
+Token: identifier   Lexeme: main
+Token: separator   Lexeme: (
+   <Opt Parameter List> ::= ε
+Token: separator   Lexeme: )
+   <Opt Declaration List> ::= ε
+   <Body> ::= { <Statement List> }
+Token: separator   Lexeme: {
+   <Statement List> ::= <Statement> <Statement List>'
+Syntax Error: Statement (token: 'integer', type: keyword)
+   <Statement List>' ::= ε
+Syntax Error: expected '}', but got 'integer' (token: 'integer', type: keyword)
+   <Function Definitions>' ::= ε
+Syntax Error: expected '$$', but got 'integer' (token: 'integer', type: keyword)
+   <Opt Declaration List> ::= <Declaration List>
+   <Declaration List> ::= <Declaration> ; <Declaration List>'
+   <Declaration> ::= <Qualifier> <IDs>
+   <Qualifier> ::= integer
+Token: keyword   Lexeme: integer
+   <IDs> ::= identifier <IDs>'
+Token: identifier   Lexeme: a
+   <IDs>' ::= , identifier <IDs>'
+Token: separator   Lexeme: ,
+Token: identifier   Lexeme: b
+   <IDs>' ::= ε
+Token: separator   Lexeme: ;
+   <Declaration List>' ::= <Declaration> ; <Declaration List>'
+   <Declaration> ::= <Qualifier> <IDs>
+   <Qualifier> ::= real
+Token: keyword   Lexeme: real
+   <IDs> ::= identifier <IDs>'
+Token: identifier   Lexeme: r
+   <IDs>' ::= ε
+Token: separator   Lexeme: ;
+   <Declaration List>' ::= ε
+Syntax Error: expected '$$', but got 'a' (token: 'a', type: identifier)
+   <Statement List> ::= <Statement> <Statement List>'
+   <Statement> ::= <Assign>
+   <Assign> ::= <Identifier> = <Expression> ;
+Token: identifier   Lexeme: a
+Token: operator   Lexeme: =
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: integer   Lexeme: 10
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <Assign>
+   <Assign> ::= <Identifier> = <Expression> ;
+Token: identifier   Lexeme: b
+Token: operator   Lexeme: =
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: integer   Lexeme: 20
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <Assign>
+   <Assign> ::= <Identifier> = <Expression> ;
+Token: identifier   Lexeme: r
+Token: operator   Lexeme: =
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: real   Lexeme: 5.5
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <If>
+   <If> ::= if ( <Condition> ) <Statement> <If'>
+Token: keyword   Lexeme: if
+Token: separator   Lexeme: (
+   <Condition> ::= <Expression> <Relop> <Expression>
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= ε
+   <Relop> ::= <
+Token: operator   Lexeme: <
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: b
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: )
+   <Statement> ::= <Print>
+   <Print> ::= print ( <Expression> );
+Token: keyword   Lexeme: print
+Token: separator   Lexeme: (
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: )
+Token: separator   Lexeme: ;
+   <If'> ::= else <Statement> endif
+Token: keyword   Lexeme: else
+   <Statement> ::= <Print>
+   <Print> ::= print ( <Expression> );
+Token: keyword   Lexeme: print
+Token: separator   Lexeme: (
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: b
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: )
+Token: separator   Lexeme: ;
+Token: keyword   Lexeme: endif
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <While>
+   <While> ::= while ( <Condition> ) <Statement> endwhile
+Token: keyword   Lexeme: while
+Token: separator   Lexeme: (
+   <Condition> ::= <Expression> <Relop> <Expression>
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= ε
+   <Relop> ::= <
+Token: operator   Lexeme: <
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: b
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: )
+   <Statement> ::= <Compound>
+   <Body> ::= { <Statement List> }
+Token: separator   Lexeme: {
+   <Statement List> ::= <Statement> <Statement List>'
+   <Statement> ::= <Assign>
+   <Assign> ::= <Identifier> = <Expression> ;
+Token: identifier   Lexeme: a
+Token: operator   Lexeme: =
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= +|− <Term> <Expression'>
+Token: operator   Lexeme: +
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: integer   Lexeme: 1
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <Print>
+   <Print> ::= print ( <Expression> );
+Token: keyword   Lexeme: print
+Token: separator   Lexeme: (
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: )
+Token: separator   Lexeme: ;
+   <Statement List>' ::= ε
+Token: separator   Lexeme: }
+Token: keyword   Lexeme: endwhile
+   <Statement List>' ::= <Statement> <Statement List>'
+   <Statement> ::= <Return>
+   <Return> ::= return ; | return <Expression> ;
+Token: keyword   Lexeme: return
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: identifier   Lexeme: a
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= ε
+Syntax Error: expected '$$', but got '}' (token: '}', type: separator)

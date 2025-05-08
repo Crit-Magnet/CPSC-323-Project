@@ -6,7 +6,8 @@
 
 // Set of reserved keywords for quick lookup
 const std::unordered_set<std::string> keywords = {
-    "function", "integer", "boolean", "real", "if",    "endif",
-    "else",     "return",  "print",   "scan", "while", "endwhile"};
+    "function", "integer", "boolean", "real",  "if",       "endif", "else",
+    "return",   "print",   "scan",    "while", "endwhile", "true",  "false",
+};
 
 #endif  // KEYWORDS_H

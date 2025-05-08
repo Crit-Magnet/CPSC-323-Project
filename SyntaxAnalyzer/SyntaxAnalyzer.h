@@ -1,127 +1,57 @@
-#ifndef SYNTAX_ANALYZER_SYNTAX_RULES_H_
-#define SYNTAX_ANALYZER_SYNTAX_RULES_H_
+#ifndef SYNTAX_ANALYZER_H
+#define SYNTAX_ANALYZER_H
 
+#include <ostream>
 #include <string>
-#include "../Lexical Analyzer/lexer.h"
 
-Token getNext();
+#include "token.h"
 
-void Rat25S(std::string source_code);
+class SyntaxAnalyzer {
+ public:
+  void analyze(const std::string& source, std::ostream& output);
+};
 
+// Utility functions
+void printRule(const std::string& rule);
+void match(const std::string& expected);
+void syntaxError(const std::string& message);
+
+// Grammar rule function declarations
+void Rat25S();
 void OptFunctionDefinitions();
-
 void FunctionDefinitions();
-
-// BACKTRACKING
 void FunctionDefinitionsPrime();
-
 void Function();
-
 void OptParameterList();
-
-// BACKTRACKING
 void ParameterList();
-
 void ParameterListPrime();
-
 void Parameter();
-
 void Qualifier();
-
 void Body();
-
 void OptDeclarationList();
-
-// BACKTRACKING
 void DeclarationList();
-
 void DeclarationListPrime();
-
 void Declaration();
-
 void IDs();
-
+void IDsPrime();
 void StatementList();
-
+void StatementListPrime();
 void Statement();
-
 void Compound();
-
-// LEFT RECURSION
 void Assign();
-
-// BACKTRACKING & LEFT RECURSION
 void If();
-
-// LEFT RECUSTION
+void IfPrime();
 void Return();
-
-
-// LEFT RECUSTION
 void Print();
-
-// LEFT RECUSTION
 void Scan();
-
-// LEFT RECUSTION
 void While();
-
 void Condition();
-
 void Relop();
-
-// LEFT RECUSTION
 void Expression();
-
-// LEFT RECUSTION
+void ExpressionPrime();
 void Term();
-
+void TermPrime();
 void Factor();
-
-// LEFT RECUSTION
 void Primary();
 
-void Empty();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif /* SYNTAX_ANALYZER_SYNTAX_RULES_H_ */
+#endif  // SYNTAX_ANALYZER_H

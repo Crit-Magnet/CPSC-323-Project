@@ -1,0 +1,17 @@
+    $$
+    function power(base.integer, exp.integer)
+    {
+        integer result;
+        result = 1;
+        while (exp > 0)
+        {
+            result = result * base;
+            exp = exp - 1;
+        }
+        return result;
+    }
+    $$
+    integer b, e;
+    scan(b, e);
+    print(power(b, e));
+    $$

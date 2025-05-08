@@ -1,10 +1,7 @@
-    $$
-    function square(x.integer)
-    {
-        return x * x;
-    }
-    $$
-    integer a;
-    scan(a);
-    print(square(a));
-    $$
+$$
+function main()
+{
+  return 0;
+}
+$$
+$$

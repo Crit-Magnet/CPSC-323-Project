@@ -1,0 +1,45 @@
+===== INPUT =====
+$$
+function main()
+{
+  return 0;
+}
+$$
+$$
+
+===== SYNTAX ANALYSIS =====
+   <Rat25S> ::= $$ <Opt Function Definitions> $$ <Opt Declaration List> $$ <Statement List> $$
+Token: separator   Lexeme: $$
+   <Opt Function Definitions> ::= <Function Definitions>
+   <Function Definitions> ::= <Function> <Function Definitions>'
+   <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
+Token: keyword   Lexeme: function
+Token: identifier   Lexeme: main
+Token: separator   Lexeme: (
+   <Opt Parameter List> ::= ε
+Token: separator   Lexeme: )
+   <Opt Declaration List> ::= ε
+   <Body> ::= { <Statement List> }
+Token: separator   Lexeme: {
+   <Statement List> ::= <Statement> <Statement List>'
+   <Statement> ::= <Return>
+   <Return> ::= return ; | return <Expression> ;
+Token: keyword   Lexeme: return
+   <Expression> ::= <Term> <Expression'>
+   <Term> ::= <Factor> <Term'>
+   <Factor> ::= <Primary>
+Token: integer   Lexeme: 0
+   <Term'> ::= ε
+   <Expression'> ::= ε
+Token: separator   Lexeme: ;
+   <Statement List>' ::= ε
+Token: separator   Lexeme: }
+   <Function Definitions>' ::= ε
+Token: separator   Lexeme: $$
+   <Opt Declaration List> ::= ε
+Token: separator   Lexeme: $$
+Syntax Error: Unexpected end of input (token: '$$', type: separator)
+   <Statement List> ::= <Statement> <Statement List>'
+Syntax Error: Statement (token: '', type: )
+   <Statement List>' ::= ε
+Syntax Error: expected '$$', but got '' (token: '', type: )

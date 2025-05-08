@@ -1,17 +1,18 @@
-    $$
-    function power(base.integer, exp.integer)
-    {
-        integer result;
-        result = 1;
-        while (exp > 0)
-        {
-            result = result * base;
-            exp = exp - 1;
-        }
-        return result;
-    }
-    $$
-    integer b, e;
-    scan(b, e);
-    print(power(b, e));
-    $$
+$$
+function convertx (fahr integer)
+{
+return 5 * (fahr -32) / 9;
+}
+$$
+integer low, high, step;
+[* declarations *]
+$$
+scan (low, high, step);
+while (low <= high )
+{ print (low);
+print (convertx (low));
+low = low + step;
+}
+endwhile
+$$
+$$
