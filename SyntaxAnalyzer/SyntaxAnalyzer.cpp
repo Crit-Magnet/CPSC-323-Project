@@ -19,6 +19,7 @@ std::vector<Instr_Table_Item> instrTable;
 
 unsigned int index = 0;
 Token token;
+std::string save; // for passing variable to getAddress()
 std::ostream* out = nullptr;
 
 // Print a grammar rule being applied
@@ -91,10 +92,17 @@ void Rat25S() {
   {
 	  std::cout << symbolTable[i].id;
 	  std::cout << '\t' << symbolTable[i].address;
-	  std::cout << '\t' << symbolTable[i].type;
+	  std::cout << '\t' << symbolTable[i].type << std::endl;
+  }
+
+  std::cout << "\n\noutputting Instruction Table\n";
+  for(int i = 0; i < instrTable.size(); i++)
+  {
+	  std::cout << instrTable[i].address + 1;
+	  std::cout << '\t' << instrTable[i].instr;
+	  std::cout << '\t' << instrTable[i].operand << std::endl;
   }
 }
-
 
 // R6: <Opt Parameter List> ::= <Parameter List> | ε
 void OptParameterList() {
@@ -307,9 +315,11 @@ void Statement() {
 // R21: <Assign> ::= <Identifier> = <Expression> ;
 void Assign() {
   printRule("   <Assign> ::= <Identifier> = <Expression> ;");
+  save = token.lexeme;
   match("identifier");
   match("=");
   Expression();
+  generateInstruction("POPM", getAddress(save));
   match(";");
 }
 
@@ -410,11 +420,19 @@ void Expression() {
 
 // R31: <Expression'> ::= +|− <Term> <Expression'> | ε
 void ExpressionPrime() {
-  if (token.lexeme == "+" || token.lexeme == "-") {
+  if (token.lexeme == "+") {
     printRule("   <Expression'> ::= +|− <Term> <Expression'>");
     match(token.lexeme);
     Term();
+    generateInstruction("A", -1);
     ExpressionPrime();
+  } else if(token.lexeme == "-")
+  {
+	printRule("   <Expression'> ::= +|− <Term> <Expression'>");
+	match(token.lexeme);
+	Term();
+	generateInstruction("S", -1);
+	ExpressionPrime();
   } else {
     printRule("   <Expression'> ::= ε");
   }
@@ -433,6 +451,7 @@ void TermPrime() {
     printRule("   <Term'> ::= *|/ <Factor> <Term'>");
     match(token.lexeme);
     Factor();
+    generateInstruction("M", -1);
     TermPrime();
   } else {
     printRule("   <Term'> ::= ε");
@@ -442,11 +461,13 @@ void TermPrime() {
 // R34: <Factor> ::= - <Primary> | <Primary>
 void Factor() {
   if (token.lexeme == "-") {
+	generateInstruction("PUSHM", getAddress(token.lexeme));
     printRule("   <Factor> ::= - <Primary>");
     match("-");
     Primary();
   } else {
     printRule("   <Factor> ::= <Primary>");
+    generateInstruction("PUSHM", getAddress(token.lexeme));
     Primary();
   }
 }
@@ -507,20 +528,22 @@ void generateInstruction(std::string instr, int address)
 	temp.address = instrTable.size();
 	temp.instr   = instr;
 
-	// -1 stands for 'nil'
+	// -1 stands for 'nil' so we dont need to
 	if(address != -1)
 	{
 		// Check if instruction has an operand
-		if(instr == "PUSHM" || instr == "POPM"  || instr == "PUSHI" ||
-		   instr == "SOUT"  || instr == "JUMP0" || instr == "JUMP")
-		{
-			temp.operand = address;
-		}
+//		if(instr == "PUSHM" || instr == "POPM"  || instr == "PUSHI" ||
+//		   instr == "SOUT"  || instr == "JUMP0" || instr == "JUMP")
+//		{
+//			temp.operand = address;
+//		}
 	//	else if (instr == "GRT" || instr == "LES" || instr == "EQU" ||
 	//			 instr == "NEQ" || instr == "GEQ" || instr == "LEQ")
 	//	{
 	//		temp.operand = address + " " +
 	//	}
-		instrTable.push_back(temp);
+
 	}
+	temp.operand = address;
+	instrTable.push_back(temp);
 }
