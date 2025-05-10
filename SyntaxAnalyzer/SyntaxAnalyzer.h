@@ -4,11 +4,28 @@
 #include <ostream>
 #include <string>
 
-#include "token.h"
+#include "../LexicalAnalyzer/token.h"
 
 class SyntaxAnalyzer {
  public:
   void analyze(const std::string& source, std::ostream& output);
+};
+
+
+// Item blueprint for symbol table
+struct Symbol_Table_Item
+{
+	std::string id;
+	int address;
+	std::string type;
+};
+
+// Item blueprint for instruction table
+struct Instr_Table_Item
+{
+	int address = 10000; // default address starting value in table
+	std::string instr; // assembly instruction
+	int operand; // varible address
 };
 
 // Utility functions
@@ -53,5 +70,12 @@ void Term();
 void TermPrime();
 void Factor();
 void Primary();
+
+// Object Code function declarations
+int getAddress(std::string variable);
+void generateInstruction(std::string instr, int address);
+void backPatch();
+void storeAddress(std::string id, std::string address, std::string type);
+
 
 #endif  // SYNTAX_ANALYZER_H

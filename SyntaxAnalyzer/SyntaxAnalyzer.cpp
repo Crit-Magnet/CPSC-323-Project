@@ -1,13 +1,22 @@
-#include "SyntaxAnalyzer.h"
+#include "../SyntaxAnalyzer/SyntaxAnalyzer.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 
-#include "lexer.h"
+#include "../LexicalAnalyzer/lexer.h"
+
 
 // Global parsing state
 std::vector<Token> tokens;
+
+// Symbol Table for Object Code
+std::vector<Symbol_Table_Item> symbolTable;
+std::string datatype = "";
+
+// Instruction Table for Object Code
+std::vector<Instr_Table_Item> instrTable;
+
 unsigned int index = 0;
 Token token;
 std::ostream* out = nullptr;
@@ -59,71 +68,38 @@ void SyntaxAnalyzer::analyze(const std::string& source, std::ostream& output) {
   Rat25S();
 }
 
-// === Grammar Rule Implementations ===
+
+/*******************************************************************************
+ ====================== Grammar Rule Implementations ==========================
+*******************************************************************************/
 
 // R1: <Rat25S> ::= $$ <Opt Function Definitions> $$ <Opt Declaration List> $$
 // <Statement List> $$
 void Rat25S() {
   printRule(
-      "   <Rat25S> ::= $$ <Opt Function Definitions> $$ <Opt Declaration List> "
+      "   <Rat25S> ::= $$ <Opt Declaration List> "
       "$$ <Statement List> $$");
 
-  match("$$");
-  OptFunctionDefinitions();
   match("$$");
   OptDeclarationList();
   match("$$");
   StatementList();
   match("$$");
-}
+  std::cout << "outputting symboltable\n";
 
-// R2: <Opt Function Definitions> ::= <Function Definitions> | ε
-void OptFunctionDefinitions() {
-  if (token.lexeme == "function") {
-    printRule("   <Opt Function Definitions> ::= <Function Definitions>");
-    FunctionDefinitions();
-  } else {
-    printRule("   <Opt Function Definitions> ::= ε");
+  for(int i = 0; i < symbolTable.size(); i++)
+  {
+	  std::cout << symbolTable[i].id;
+	  std::cout << '\t' << symbolTable[i].address;
+	  std::cout << '\t' << symbolTable[i].type;
   }
 }
 
-// R3: <Function Definitions> ::= <Function> <Function Definitions>'
-void FunctionDefinitions() {
-  printRule("   <Function Definitions> ::= <Function> <Function Definitions>'");
-  Function();
-  FunctionDefinitionsPrime();
-}
-
-// R4: <Function Definitions>' ::= <Function> <Function Definitions>' | ε
-void FunctionDefinitionsPrime() {
-  if (token.lexeme == "function") {
-    printRule(
-        "   <Function Definitions>' ::= <Function> <Function Definitions>'");
-    Function();
-    FunctionDefinitionsPrime();
-  } else {
-    printRule("   <Function Definitions>' ::= ε");
-  }
-}
-
-// R5: <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt
-// Declaration List> <Body>
-void Function() {
-  printRule(
-      "   <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt "
-      "Declaration List> <Body>");
-  match("function");
-  match("identifier");
-  match("(");
-  OptParameterList();
-  match(")");
-  OptDeclarationList();
-  Compound();
-}
 
 // R6: <Opt Parameter List> ::= <Parameter List> | ε
 void OptParameterList() {
   if (token.type == "identifier") {
+
     printRule("   <Opt Parameter List> ::= <Parameter List>");
     ParameterList();
   } else {
@@ -157,11 +133,12 @@ void Parameter() {
   Qualifier();
 }
 
-// R10: <Qualifier> ::= integer | boolean | real
+// R10: <Qualifier> ::= integer | boolean
 void Qualifier() {
-  if (token.lexeme == "integer" || token.lexeme == "boolean" ||
-      token.lexeme == "real") {
+  if (token.lexeme == "integer" || token.lexeme == "boolean")
+  {
     printRule("   <Qualifier> ::= " + token.lexeme);
+    datatype = token.lexeme; // Check for variable type for symbol table
     match(token.lexeme);
   } else {
     syntaxError("Qualifier");
@@ -178,8 +155,7 @@ void Compound() {
 
 // R12: <Opt Declaration List> ::= <Declaration List> | ε
 void OptDeclarationList() {
-  if (token.lexeme == "integer" || token.lexeme == "boolean" ||
-      token.lexeme == "real") {
+  if (token.lexeme == "integer" || token.lexeme == "boolean"){
     printRule("   <Opt Declaration List> ::= <Declaration List>");
     DeclarationList();
   } else {
@@ -197,8 +173,7 @@ void DeclarationList() {
 
 // R14: <Declaration List>' ::= <Declaration> ; <Declaration List>' | ε
 void DeclarationListPrime() {
-  if (token.lexeme == "integer" || token.lexeme == "boolean" ||
-      token.lexeme == "real") {
+  if (token.lexeme == "integer" || token.lexeme == "boolean") {
     printRule("   <Declaration List>' ::= <Declaration> ; <Declaration List>'");
     Declaration();
     match(";");
@@ -218,7 +193,31 @@ void Declaration() {
 // R16: <IDs> ::= identifier <IDs>'
 void IDs() {
   printRule("   <IDs> ::= identifier <IDs>'");
+
+  // check if variable is already in symbol table
+  // Have to check all instances here as well in case
+  //  we have integers and booleans declared in a file since
+  //  we create variables of a type until ';'
+  bool temp = 0;
+  for(int i = 0; i < symbolTable.size(); i++)
+  {
+	  if(symbolTable[i].id == token.lexeme)
+	  {
+		  std::cout << "in symbol table\n";
+		  temp = 1;
+		  break;
+	  }
+  }
+  if(!temp)
+  {
+		Symbol_Table_Item temp;
+		temp.id 	   = token.lexeme;
+		temp.address = 10000+symbolTable.size(); // Start at address 10000
+		temp.type    = datatype;
+		symbolTable.push_back(temp);
+  }
   match("identifier");
+
   IDsPrime();
 }
 
@@ -226,7 +225,28 @@ void IDs() {
 void IDsPrime() {
   if (token.lexeme == ",") {
     printRule("   <IDs>' ::= , identifier <IDs>'");
+
     match(",");
+
+    // check if variable is already in symbol table
+	bool temp = 0;
+	for(int i = 0; i < symbolTable.size(); i++)
+	{
+		if(symbolTable[i].id == token.lexeme)
+		{
+			std::cout << token.lexeme << " in symbol table\n";
+			temp = 1;
+			break;
+		}
+	}
+	if(!temp)
+	{
+		Symbol_Table_Item temp;
+		temp.id 	   = token.lexeme;
+		temp.address = 10000 + symbolTable.size(); // Start at address 10000
+		temp.type    = datatype;
+		symbolTable.push_back(temp);
+	}
     match("identifier");
     IDsPrime();
   } else {
@@ -431,7 +451,7 @@ void Factor() {
   }
 }
 
-// R35: <Primary> ::= identifier [ ( <IDs> ) ] | integer | real | ( <Expression>
+// R35: <Primary> ::= identifier [ ( <IDs> ) ] | integer | ( <Expression>
 // ) | true | false
 void Primary() {
   if (token.type == "identifier") {
@@ -443,8 +463,6 @@ void Primary() {
     }
   } else if (token.type == "integer") {
     match("integer");
-  } else if (token.type == "real") {
-    match("real");
   } else if (token.lexeme == "(") {
     match("(");
     Expression();
@@ -454,4 +472,55 @@ void Primary() {
   } else {
     syntaxError("Primary");
   }
+}
+
+
+
+/*******************************************************************************
+ ====================== PROJECT PART 3 FUNCTIONS ===============================
+ ******************************************************************************/
+// Pass variable to function and return the address of that variable
+int getAddress(std::string variable)
+{
+	int address = -1000;
+
+	for(int i = 0; i < symbolTable.size(); i++)
+	{
+		if(symbolTable[i].id == variable)
+		{
+			address = symbolTable[i].address;
+		}
+	}
+
+	if(address == -1000)
+	{
+		std::cout << "Error: variable \'" << variable << "\' not defined.";
+	}
+
+	return address;
+}
+
+// Uses getAddress() return for address param.
+void generateInstruction(std::string instr, int address)
+{
+	Instr_Table_Item temp;
+	temp.address = instrTable.size();
+	temp.instr   = instr;
+
+	// -1 stands for 'nil'
+	if(address != -1)
+	{
+		// Check if instruction has an operand
+		if(instr == "PUSHM" || instr == "POPM"  || instr == "PUSHI" ||
+		   instr == "SOUT"  || instr == "JUMP0" || instr == "JUMP")
+		{
+			temp.operand = address;
+		}
+	//	else if (instr == "GRT" || instr == "LES" || instr == "EQU" ||
+	//			 instr == "NEQ" || instr == "GEQ" || instr == "LEQ")
+	//	{
+	//		temp.operand = address + " " +
+	//	}
+		instrTable.push_back(temp);
+	}
 }
