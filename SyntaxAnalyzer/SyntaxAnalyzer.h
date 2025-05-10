@@ -74,7 +74,7 @@ void Primary();
 // Object Code function declarations
 int getAddress(std::string variable);
 void generateInstruction(std::string instr, int address);
-void backPatch();
+void backPatch(int instrAddress);
 void storeAddress(std::string id, std::string address, std::string type);
 
 

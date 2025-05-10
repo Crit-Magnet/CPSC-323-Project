@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <stack>
 
 #include "../LexicalAnalyzer/lexer.h"
 
@@ -19,7 +20,11 @@ std::vector<Instr_Table_Item> instrTable;
 
 unsigned int index = 0;
 Token token;
-std::string save; // for passing variable to getAddress()
+
+std::string save = ""; // for passing variable to getAddress()
+int instrAdd = 0; 	    // for passing instruction addresses
+std::stack<int> JMPStack; // used for backpatching
+
 std::ostream* out = nullptr;
 
 // Print a grammar rule being applied
@@ -331,6 +336,7 @@ void If() {
   Condition();
   match(")");
   Statement();
+  backPatch(instrAdd);
   IfPrime();
 }
 
@@ -384,11 +390,15 @@ void Scan() {
 // R27: <While> ::= while ( <Condition> ) <Statement> endwhile
 void While() {
   printRule("   <While> ::= while ( <Condition> ) <Statement> endwhile");
+  generateInstruction("LABEL", -1);
+  instrAdd = instrTable.size();
   match("while");
   match("(");
   Condition();
   match(")");
   Statement();
+  generateInstruction("JUMP", instrAdd);
+  backPatch(instrAdd);
   match("endwhile");
 }
 
@@ -405,7 +415,45 @@ void Relop() {
   if (token.lexeme == "==" || token.lexeme == "!=" || token.lexeme == "<" ||
       token.lexeme == ">" || token.lexeme == "<=" || token.lexeme == ">=") {
     printRule("   <Relop> ::= " + token.lexeme);
+
+    if(token.lexeme == "==")
+    {
+    	generateInstruction("EQU",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
+    else if(token.lexeme == "!=")
+    {
+    	generateInstruction("NEQ",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
+    else if(token.lexeme == "<")
+    {
+    	generateInstruction("LES",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
+    else if(token.lexeme == ">")
+    {
+    	generateInstruction("GRT",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
+    else if(token.lexeme == "<=")
+    {
+    	generateInstruction("LEQ",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
+    else if(token.lexeme == ">=")
+    {
+    	generateInstruction("GEQ",-1);
+    	JMPStack.push(instrAdd);
+    	generateInstruction("JMP0", -1);
+    }
     match(token.lexeme);
+    std::cout << "INSTRUCTION" << instrTable[3].instr;
   } else {
     syntaxError("Relop");
   }
@@ -461,13 +509,23 @@ void TermPrime() {
 // R34: <Factor> ::= - <Primary> | <Primary>
 void Factor() {
   if (token.lexeme == "-") {
-	generateInstruction("PUSHM", getAddress(token.lexeme));
-    printRule("   <Factor> ::= - <Primary>");
+
+	// Check for non-variable integers
+	if(!isdigit(token.lexeme[0]))
+	{
+		generateInstruction("PUSHM", getAddress(token.lexeme));
+	}
+
+	printRule("   <Factor> ::= - <Primary>");
     match("-");
     Primary();
   } else {
     printRule("   <Factor> ::= <Primary>");
-    generateInstruction("PUSHM", getAddress(token.lexeme));
+	// Check for non-variable integers
+	if(!isdigit(token.lexeme[0]))
+	{
+		generateInstruction("PUSHM", getAddress(token.lexeme));
+	}
     Primary();
   }
 }
@@ -483,6 +541,7 @@ void Primary() {
       match(")");
     }
   } else if (token.type == "integer") {
+	generateInstruction("PUSHI", stoi(token.lexeme));
     match("integer");
   } else if (token.lexeme == "(") {
     match("(");
@@ -505,17 +564,25 @@ int getAddress(std::string variable)
 {
 	int address = -1000;
 
-	for(int i = 0; i < symbolTable.size(); i++)
+	if(!std::isdigit(variable[0]))
 	{
-		if(symbolTable[i].id == variable)
+		for(int i = 0; i < symbolTable.size(); i++)
 		{
-			address = symbolTable[i].address;
+			if(symbolTable[i].id == variable)
+			{
+				address = symbolTable[i].address;
+			}
+		}
+
+		if(address == -1000)
+		{
+			std::cout << "Error: variable \'" << variable << "\' not defined.";
 		}
 	}
-
-	if(address == -1000)
+	else
 	{
-		std::cout << "Error: variable \'" << variable << "\' not defined.";
+		// chance of breaking program but work for things like i = i + 1
+		address = stoi(variable);
 	}
 
 	return address;
@@ -529,21 +596,25 @@ void generateInstruction(std::string instr, int address)
 	temp.instr   = instr;
 
 	// -1 stands for 'nil' so we dont need to
-	if(address != -1)
+	if(address == -1)
 	{
-		// Check if instruction has an operand
-//		if(instr == "PUSHM" || instr == "POPM"  || instr == "PUSHI" ||
-//		   instr == "SOUT"  || instr == "JUMP0" || instr == "JUMP")
-//		{
-//			temp.operand = address;
-//		}
-	//	else if (instr == "GRT" || instr == "LES" || instr == "EQU" ||
-	//			 instr == "NEQ" || instr == "GEQ" || instr == "LEQ")
-	//	{
-	//		temp.operand = address + " " +
-	//	}
-
+		temp.operand = -1;
 	}
-	temp.operand = address;
+	else
+	{
+		temp.operand = address;
+	}
 	instrTable.push_back(temp);
+	return;
+}
+
+//
+void backPatch(int instrAddress)
+{
+	std::cout << "TOP OF JMPSTACK" << JMPStack.top() << std::endl;
+	int addr = JMPStack.top();
+	JMPStack.pop();
+
+	instrTable[addr].operand = instrAddress;
+	return;
 }
