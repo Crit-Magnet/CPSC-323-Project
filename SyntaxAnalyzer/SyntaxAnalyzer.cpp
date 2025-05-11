@@ -24,6 +24,7 @@ Token token;
 std::string save = ""; // for passing variable to getAddress()
 int instrAdd = 0; 	    // for passing instruction addresses
 std::stack<int> JMPStack; // used for backpatching
+bool relational = 0;      // check for relational for second param
 
 std::ostream* out = nullptr;
 
@@ -390,14 +391,14 @@ void Scan() {
 // R27: <While> ::= while ( <Condition> ) <Statement> endwhile
 void While() {
   printRule("   <While> ::= while ( <Condition> ) <Statement> endwhile");
-  generateInstruction("LABEL", -1);
   instrAdd = instrTable.size();
+  generateInstruction("LABEL", -1);
   match("while");
   match("(");
   Condition();
   match(")");
   Statement();
-  generateInstruction("JUMP", instrAdd);
+  generateInstruction("JUMP", instrAdd+1);
   backPatch(instrAdd);
   match("endwhile");
 }
@@ -453,7 +454,9 @@ void Relop() {
     	generateInstruction("JMP0", -1);
     }
     match(token.lexeme);
-    std::cout << "INSTRUCTION" << instrTable[3].instr;
+    // part 3
+    relational = 1;
+//    std::cout << "INSTRUCTION" << instrTable[3].instr;
   } else {
     syntaxError("Relop");
   }
@@ -474,15 +477,14 @@ void ExpressionPrime() {
     Term();
     generateInstruction("A", -1);
     ExpressionPrime();
-  } else if(token.lexeme == "-")
-  {
-	printRule("   <Expression'> ::= +|− <Term> <Expression'>");
-	match(token.lexeme);
-	Term();
-	generateInstruction("S", -1);
-	ExpressionPrime();
-  } else {
-    printRule("   <Expression'> ::= ε");
+  } else if(token.lexeme == "-"){
+	  printRule("   <Expression'> ::= +|− <Term> <Expression'>");
+	  match(token.lexeme);
+	  Term();
+	  generateInstruction("S", -1);
+	  ExpressionPrime();
+  }   else {
+        printRule("   <Expression'> ::= ε");
   }
 }
 
@@ -605,6 +607,24 @@ void generateInstruction(std::string instr, int address)
 		temp.operand = address;
 	}
 	instrTable.push_back(temp);
+
+	// Checks if this is the next instruction after a relational
+	// because I couldnt find a way to push twice before relationals
+	// so I just make a couple swaps in our vector to make it seem I did
+	if(relational)
+	{
+		std::cout << "CURRENT TEMP" << instr;
+		instrTable[instrTable.size()-1] = instrTable[instrTable.size()-3];
+		instrTable[instrTable.size()] = instrTable[instrTable.size()-3];
+		instrTable[instrTable.size()-3] = temp;
+
+//		// Change instruction addresses
+//		temp.address = 3;
+//		instrTable[instrTable.size()-1].address = instrTable[instrTable.size()-3].address;
+//		instrTable[instrTable.size()].address = instrTable[instrTable.size()-3].address;
+//		instrTable[instrTable.size()-3].address = temp.address;
+		relational = 0;
+	}
 	return;
 }
 
