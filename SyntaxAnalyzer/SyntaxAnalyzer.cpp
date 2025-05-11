@@ -21,10 +21,10 @@ std::vector<Instr_Table_Item> instrTable;
 unsigned int index = 0;
 Token token;
 
-std::string save = ""; // for passing variable to getAddress()
-int instrAdd = 0; 	    // for passing instruction addresses
-std::stack<int> JMPStack; // used for backpatching
-bool relational = 0;      // check for relational for second param
+std::string save = "";     // for passing variable to getAddress()
+int instrAdd = 0; 	       // for passing instruction addresses
+std::stack<int> JUMPStack; // used for backpatching
+bool relational = 0;       // check for relational for second param
 
 std::ostream* out = nullptr;
 
@@ -399,7 +399,7 @@ void While() {
   match(")");
   Statement();
   generateInstruction("JUMP", instrAdd+1);
-  backPatch(instrAdd);
+  backPatch(instrTable.size());
   match("endwhile");
 }
 
@@ -420,37 +420,38 @@ void Relop() {
     if(token.lexeme == "==")
     {
     	generateInstruction("EQU",-1);
-    	JMPStack.push(instrAdd);
+    	JUMPStack.push(instrTable.size());
     	generateInstruction("JMP0", -1);
     }
     else if(token.lexeme == "!=")
     {
     	generateInstruction("NEQ",-1);
-    	JMPStack.push(instrAdd);
+    	JUMPStack.push(instrTable.size());
     	generateInstruction("JMP0", -1);
     }
     else if(token.lexeme == "<")
     {
     	generateInstruction("LES",-1);
-    	JMPStack.push(instrAdd);
+    	std::cout << "RELATIONAL INSTRADD" << instrTable.size();
+    	JUMPStack.push(instrTable.size());
     	generateInstruction("JMP0", -1);
     }
     else if(token.lexeme == ">")
     {
     	generateInstruction("GRT",-1);
-    	JMPStack.push(instrAdd);
+    	JUMPStack.push(instrTable.size());
     	generateInstruction("JMP0", -1);
     }
     else if(token.lexeme == "<=")
     {
     	generateInstruction("LEQ",-1);
-    	JMPStack.push(instrAdd);
-    	generateInstruction("JMP0", -1);
+    	JUMPStack.push(instrTable.size());
+    	generateInstruction("JUMP0", -1);
     }
     else if(token.lexeme == ">=")
     {
     	generateInstruction("GEQ",-1);
-    	JMPStack.push(instrAdd);
+    	JUMPStack.push(instrTable.size());
     	generateInstruction("JMP0", -1);
     }
     match(token.lexeme);
@@ -613,22 +614,7 @@ void generateInstruction(std::string instr, int address)
 	// so I just make a couple swaps in our vector to make it seem I did
 	if(relational)
 	{
-		// Maybe add a second generate in here and somehow get the address of
-		// the var after the relational?
-		// Doesnt work for if statement since it has no LABEL so if
-		// the first instruction is a relational
-		// ie "if(i<max)", since if is not a LABEL
-		// we get and out of bounds crash on our array
-		std::cout << "CURRENT TEMP" << instr;
-		instrTable[instrTable.size()-1] = instrTable[instrTable.size()-3];
-		instrTable[instrTable.size()] = instrTable[instrTable.size()-3];
-		instrTable[instrTable.size()-3] = temp;
 
-//		// Change instruction addresses
-//		temp.address = 3;
-//		instrTable[instrTable.size()-1].address = instrTable[instrTable.size()-3].address;
-//		instrTable[instrTable.size()].address = instrTable[instrTable.size()-3].address;
-//		instrTable[instrTable.size()-3].address = temp.address;
 		relational = 0;
 	}
 	return;
@@ -637,9 +623,9 @@ void generateInstruction(std::string instr, int address)
 //
 void backPatch(int instrAddress)
 {
-	std::cout << "TOP OF JMPSTACK" << JMPStack.top() << std::endl;
-	int addr = JMPStack.top();
-	JMPStack.pop();
+	std::cout << "TOP OF JUMPSTACK" << JUMPStack.top() << std::endl;
+	int addr = JUMPStack.top();
+	JUMPStack.pop();
 
 	instrTable[addr].operand = instrAddress;
 	return;
