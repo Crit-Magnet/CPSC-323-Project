@@ -613,6 +613,12 @@ void generateInstruction(std::string instr, int address)
 	// so I just make a couple swaps in our vector to make it seem I did
 	if(relational)
 	{
+		// Maybe add a second generate in here and somehow get the address of
+		// the var after the relational?
+		// Doesnt work for if statement since it has no LABEL so if
+		// the first instruction is a relational
+		// ie "if(i<max)", since if is not a LABEL
+		// we get and out of bounds crash on our array
 		std::cout << "CURRENT TEMP" << instr;
 		instrTable[instrTable.size()-1] = instrTable[instrTable.size()-3];
 		instrTable[instrTable.size()] = instrTable[instrTable.size()-3];
