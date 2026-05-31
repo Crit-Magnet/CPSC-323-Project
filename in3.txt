@@ -1,0 +1,37 @@
+$$
+function main()
+{
+  integer a, b;
+  real r;
+  a = 10;
+  b = 20;
+  r = 5.5;
+  if (a < b)
+    print(a);
+  else
+    print(b);
+  endif
+  while (a < b)
+  {
+    a = a + 1;
+    print(a);
+  }
+  endwhile
+  return a;
+}
+$$
+boolean flag;
+integer count;
+$$
+{
+  scan(count);
+  flag = true;
+  while (count > 0)
+  {
+    print(count);
+    count = count - 1;
+  }
+  endwhile
+}
+$$
+$$

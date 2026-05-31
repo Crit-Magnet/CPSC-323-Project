@@ -1,116 +1,49 @@
-#include <iostream> /* cout cin */
-#include <fstream>  /* fstream  */
-// #include <stdio.h>  
-#include <string>   /*  stoi     */
-using namespace std;
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
 
-struct lexReturn
-{
-	string token;
-	string lexeme;
-};
+#include "SyntaxAnalyzer.h"
+#include "lexer.h"
 
-lexReturn lexer(string target, fstream* file);
-string FSMLetter(string target, fstream* file);
-string FSMDigitReal(string target, fstream* file);
+int main(int argc, char *argv[]) {
+  // Check for input file argument
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <source_file>" << std::endl;
+    return 1;
+  }
 
+  // Open source file
+  std::ifstream file(argv[1]);
+  if (!file) {
+    std::cerr << "Error: Could not open file " << argv[1] << std::endl;
+    return 1;
+  }
 
-int state = 1;
+  // Read entire file contents into a string
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string source_code = buffer.str();
 
-int main()
-{
-	fstream  file;
-	fstream* filePtr;
-	file.open("input.txt"); // open input for parsing
+  // Open output file for results
+  std::ofstream output_file("output.txt");
+  if (!output_file) {
+    std::cerr << "Error: Could not open output.txt for writing." << std::endl;
+    return 1;
+  }
 
-	lexReturn value;
+  // Write the input source code to the output file
+  output_file << "===== INPUT =====\n" << source_code << "\n";
 
-	filePtr = &file;
-	string output = "";
+  // Tokenize input
+  std::vector<Token> tokens = lexer(source_code); 
 
+  // Run syntax analyzer on source code
+  output_file << "\n===== SYNTAX ANALYSIS =====\n";
+  SyntaxAnalyzer analyzer;
+  analyzer.analyze(source_code, output_file);
 
-    // I think this is the lexer but its in main cause thats were my initial tests came from
-	while(!filePtr->eof())
-	{
-        state = 1;
-		if(isspace(filePtr->peek()))
-		{
-			//cout << test << endl;
-			output = "";
-			//cout << "skip" << endl;
-			filePtr->ignore(1);
-		}
-        else if(isalpha(filePtr->peek()))
-        {
-            output += filePtr->get();
-            // char test[100];
-            // if(filePtr -> getline(test, 100));
-            // else
-            // {
-            // output = FSMLetter(output, filePtr);
-            // }
-        }
-		else if(isdigit(filePtr->peek()))
-		{
-			output += filePtr->get();
-            FSMDigitReal(output, filePtr);
-		}
-        else
-        {
-            // cout << "not found";
-            filePtr->ignore(1);
-        }
-        // cout << output << endl;
-		// value = lexer(output, filePtr);
-	}
-
-	file.close(); // close input after parsing
-	return 0;
-}
-
-/* checks both digits and reals */
-/*    ACCEPTED RETURN STATES    */
-/*        INTEGER = 2           */
-/*        REAL    = 4           */
-
-string FSMDigitReal(string target, fstream* file)
-{
-    if(isspace(file->peek()) || file->peek()==';')
-    {
-        // check for rejected state
-        if(state == 1 || state == 3 || state == 5)
-        {
-            cout << "rejected";
-            return target;
-        }
-        else
-        {
-            cout << "accepted\n";
-        }
-
-        cout << target;
-        state = 1;
-        return target;
-    }
-
-    target += file->get();
-
-    if(isdigit(target.back()))
-    {
-        state = 2;
-    }
-    else if(isdigit(target.back() && state == 3))
-    {
-        state = 4;
-    }
-    else if(target.back() == '.')
-    {
-        state = 3;
-    }
-    else
-    {
-        state = 5;
-    }
-    
-    return FSMDigitReal(target, file);
+  // Clean up
+  output_file.close();
+  return 0;
 }

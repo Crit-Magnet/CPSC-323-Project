@@ -1,0 +1,50 @@
+===== INPUT =====
+a
+A
+B
+c123
+test_var
+anotherVar.
+_leadingUnderscore
+var_123
+this_is_valid123
+VeryLongIdentifierNameWith123Numbers
+keyword_like_variable 
+integerX
+if_else_var
+123InvalidIdentifier   
+@invalidSymbol         
+var-name               
+int                    
+while                  
+double_value           
+5timesLoop             
+space inIdentifier     
+_thisIsFineBut.123     
+
+===== TOKENIZED OUTPUT =====
+Token: identifier, Lexeme: a
+Token: identifier, Lexeme: A
+Token: identifier, Lexeme: B
+Token: identifier, Lexeme: c123
+Token: identifier, Lexeme: test_var
+Token: INVALID, Lexeme: anotherVar.
+Token: identifier, Lexeme: _leadingUnderscore
+Token: identifier, Lexeme: var_123
+Token: identifier, Lexeme: this_is_valid123
+Token: identifier, Lexeme: VeryLongIdentifierNameWith123Numbers
+Token: identifier, Lexeme: keyword_like_variable
+Token: identifier, Lexeme: integerX
+Token: identifier, Lexeme: if_else_var
+Token: INVALID, Lexeme: 123InvalidIdentifier
+Token: INVALID, Lexeme: @invalidSymbol
+Token: identifier, Lexeme: var
+Token: operator, Lexeme: -
+Token: identifier, Lexeme: name
+Token: identifier, Lexeme: int
+Token: keyword, Lexeme: while
+Token: identifier, Lexeme: double_value
+Token: INVALID, Lexeme: 5timesLoop
+Token: identifier, Lexeme: space
+Token: identifier, Lexeme: inIdentifier
+Token: INVALID, Lexeme: _thisIsFineBut.123
